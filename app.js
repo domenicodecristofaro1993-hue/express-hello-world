@@ -144,8 +144,8 @@ const html = `
   "sort": "",
   "carriersIds": [-32677, -32695],
   "flights": [
-    { "originSkyId": "MSYA", "destinationSkyId": "LOND", "departDate": "2025-06-13" },
-    { "originSkyId": "PARI", "destinationSkyId": "HAN", "departDate": "2025-06-29" }
+    { "originSkyId": "MSYA", "destinationSkyId": "LOND", "departDate": "2026-06-13" },
+    { "originSkyId": "PARI", "destinationSkyId": "HAN", "departDate": "2026-06-29" }
   ]
 }
       </textarea>
