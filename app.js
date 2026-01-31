@@ -1,5 +1,5 @@
 const express = require("express");
-const fetch = require("node-fetch"); // Assicurati di avere node-fetch@2
+const fetch = require("node-fetch"); // Usa node-fetch@2
 require("dotenv").config();
 
 const app = express();
@@ -9,38 +9,67 @@ const port = process.env.PORT || 3001;
 app.use(express.json());
 
 // ===============================
-// 🌍 HOME PAGE (HTML)
+// 🌍 HOME PAGE (HTML semplice)
 // ===============================
 app.get("/", (req, res) => {
   res.type("html").send(html);
 });
 
 // ===============================
-// ✈️ API: Ricerca voli Skyscanner
+// ✈️ API MULTI-CITY DINAMICA
 // ===============================
-app.post("/api/search", async (req, res) => {
-  const { from, to, date } = req.body;
-
-  if (!from || !to || !date) {
-    return res.status(400).json({ error: "Parametri mancanti" });
-  }
-
+app.post("/api/multicity", async (req, res) => {
   try {
-    const url = `https://skyscanner44.p.rapidapi.com/search?adults=1&origin=${from}&destination=${to}&departureDate=${date}`;
+    const {
+      market = "US",
+      locale = "en-US",
+      currency = "USD",
+      adults = 1,
+      children = 0,
+      infants = 0,
+      cabinClass = "economy",
+      stops = [],
+      sort = "",
+      carriersIds = [],
+      flights = []
+    } = req.body;
+
+    if (!flights.length) {
+      return res.status(400).json({ error: "Devi fornire almeno un volo" });
+    }
+
+    const url = "https://fly-scraper.p.rapidapi.com/v2/flights/search-multi-city";
+
+    const body = {
+      market,
+      locale,
+      currency,
+      adults,
+      children,
+      infants,
+      cabinClass,
+      stops,
+      sort,
+      carriersIds,
+      flights
+    };
 
     const response = await fetch(url, {
+      method: "POST",
       headers: {
-        "X-RapidAPI-Key": process.env.RAPIDAPI_KEY,
-        "X-RapidAPI-Host": "skyscanner44.p.rapidapi.com"
-      }
+        "Content-Type": "application/json",
+        "x-rapidapi-host": "fly-scraper.p.rapidapi.com",
+        "x-rapidapi-key": process.env.RAPIDAPI_KEY
+      },
+      body: JSON.stringify(body)
     });
 
     const data = await response.json();
     res.json(data);
 
   } catch (err) {
-    console.error("Errore API:", err);
-    res.status(500).json({ error: "Errore nella ricerca voli" });
+    console.error("Errore RapidAPI:", err);
+    res.status(500).json({ error: "Errore nella chiamata multi-city" });
   }
 });
 
@@ -56,38 +85,27 @@ server.keepAliveTimeout = 120 * 1000;
 server.headersTimeout = 120 * 1000;
 
 // ===============================
-// 🌐 HTML FRONTEND
+// 🌐 HTML FRONTEND MINIMALE
 // ===============================
 const html = `
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Flight Search</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script>
-      setTimeout(() => {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          disableForReducedMotion: true
-        });
-      }, 500);
-    </script>
+    <title>Multi-City Flight Search</title>
     <style>
       body { font-family: Arial; background: #f5f5f5; }
       section {
         padding: 2em;
         background: white;
         border-radius: 10px;
-        width: 400px;
+        width: 450px;
         margin: 100px auto;
         text-align: center;
       }
-      input, button {
+      input, button, textarea {
         padding: 10px;
         margin: 5px;
-        width: 80%;
+        width: 90%;
         border-radius: 6px;
         border: 1px solid #ccc;
       }
@@ -111,23 +129,38 @@ const html = `
   </head>
   <body>
     <section>
-      <h2>Ricerca Voli</h2>
-      <input id="from" placeholder="Da (es. MXP)" /><br>
-      <input id="to" placeholder="A (es. JFK)" /><br>
-      <input id="date" type="date" /><br>
+      <h2>Ricerca Voli Multi-City</h2>
+
+      <textarea id="jsonInput" rows="10">
+{
+  "market": "US",
+  "locale": "en-US",
+  "currency": "USD",
+  "adults": 1,
+  "children": 0,
+  "infants": 0,
+  "cabinClass": "economy",
+  "stops": [],
+  "sort": "",
+  "carriersIds": [-32677, -32695],
+  "flights": [
+    { "originSkyId": "MSYA", "destinationSkyId": "LOND", "departDate": "2025-06-13" },
+    { "originSkyId": "PARI", "destinationSkyId": "HAN", "departDate": "2025-06-29" }
+  ]
+}
+      </textarea>
+
       <button onclick="search()">Cerca</button>
       <pre id="results"></pre>
 
       <script>
         async function search() {
-          const from = document.getElementById("from").value;
-          const to = document.getElementById("to").value;
-          const date = document.getElementById("date").value;
+          const body = JSON.parse(document.getElementById("jsonInput").value);
 
-          const res = await fetch("/api/search", {
+          const res = await fetch("/api/multicity", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ from, to, date })
+            body: JSON.stringify(body)
           });
 
           const data = await res.json();
