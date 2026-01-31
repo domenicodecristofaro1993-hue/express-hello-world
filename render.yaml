@@ -8,3 +8,5 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: RAPIDAPI_KEY
+        value: b4c45da22dmshb1f7682b10a9655p17628bjsn676920364e64
