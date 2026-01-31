@@ -7,10 +7,13 @@
   "author": "Render Developers",
   "license": "MIT",
   "private": false,
+  "type":"module",
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "^5.0.0"
+    "express": "^5.0.0",
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.4.0"
   }
 }
