@@ -1,18 +1,19 @@
-import express from "express";
-import fetch from "node-fetch";
-import dotenv from "dotenv";
-
-dotenv.config();
+const express = require("express");
+const fetch = require("node-fetch"); // Assicurati di avere node-fetch@2
+require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Middleware
 app.use(express.json());
 
-
-
-// Serve la homepage
-app.get("/", (req, res) => res.type("html").send(html));
+// ===============================
+// 🌍 HOME PAGE (HTML)
+// ===============================
+app.get("/", (req, res) => {
+  res.type("html").send(html);
+});
 
 // ===============================
 // ✈️ API: Ricerca voli Skyscanner
@@ -44,18 +45,18 @@ app.post("/api/search", async (req, res) => {
 });
 
 // ===============================
-// 🚀 Avvio server
+// 🚀 AVVIO SERVER
 // ===============================
-const server = app.listen(port, () =>
-  console.log(`Server online su porta ${port}`)
-);
+const server = app.listen(port, () => {
+  console.log(`Server online su porta ${port}`);
+});
 
 // Timeout richiesti da Render
 server.keepAliveTimeout = 120 * 1000;
 server.headersTimeout = 120 * 1000;
 
 // ===============================
-// 🌐 HTML iniziale
+// 🌐 HTML FRONTEND
 // ===============================
 const html = `
 <!DOCTYPE html>
@@ -83,14 +84,37 @@ const html = `
         margin: 100px auto;
         text-align: center;
       }
+      input, button {
+        padding: 10px;
+        margin: 5px;
+        width: 80%;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+      button {
+        background: #3b82f6;
+        color: white;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #2563eb;
+      }
+      pre {
+        text-align: left;
+        background: #eee;
+        padding: 10px;
+        border-radius: 6px;
+        max-height: 300px;
+        overflow: auto;
+      }
     </style>
   </head>
   <body>
     <section>
       <h2>Ricerca Voli</h2>
-      <input id="from" placeholder="Da (es. MXP)" /><br><br>
-      <input id="to" placeholder="A (es. JFK)" /><br><br>
-      <input id="date" type="date" /><br><br>
+      <input id="from" placeholder="Da (es. MXP)" /><br>
+      <input id="to" placeholder="A (es. JFK)" /><br>
+      <input id="date" type="date" /><br>
       <button onclick="search()">Cerca</button>
       <pre id="results"></pre>
 
