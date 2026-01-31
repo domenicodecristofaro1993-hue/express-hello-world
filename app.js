@@ -1,12 +1,15 @@
-const express = require("express");
-const fetch = require("node-fetch");
-require("dotenv").config();
+import express from "express";
+import fetch from "node-fetch";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Middleware
 app.use(express.json());
+
+
 
 // Serve la homepage
 app.get("/", (req, res) => res.type("html").send(html));
