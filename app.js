@@ -30,7 +30,7 @@ app.post("/api/price-calendar", (req, res) => {
     port: null,
     path: `/flights/price-calendar?fromEntityId=${fromEntityId}&departDate=${departDate}&toEntityId=${toEntityId}`,
     headers: {
-      "x-rapidapi-key": process.env.RAPIDAPI_KEY,
+      "x-rapidapi-key": b4c45da22dmshb1f7682b10a9655p17628bjsn676920364e64,
       "x-rapidapi-host": "flights-sky.p.rapidapi.com"
     }
   };
